@@ -16,9 +16,9 @@ extern std::string test_info;
 string face_cascade_name = "/home/ubuntu/face_cascade_example/profile_face_model/cascade.xml";
 CascadeClassifier face_cascade;
 
-bool testOverlap(Rect&, Rect&, int);
-void testNextRect(std::vector<Rect>&, Rect&, std::vector<int>&);
-void testAllRect(std::vector<Rect>&, std::vector<Rect>&, std::vector<int>&);
+// bool testOverlap(Rect&, Rect&, int);
+// void testNextRect(std::vector<Rect>&, Rect&, std::vector<int>&);
+// void testAllRect(std::vector<Rect>&, std::vector<Rect>&, std::vector<int>&);
 void CutRect(std::string image_name, std::vector<Rect>&, Mat*);
 
 unordered_map<string, vector<Rect>> images_info;
@@ -61,17 +61,17 @@ int main( int argc, char** argv )
         face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0, Size(200, 200) );     
         // cout << "after detect face." << endl;
         //combine rectangles------added code
-        std::vector<Rect> ResultFaces = {};
-        if (!faces.empty())
-        {
-            ResultFaces.push_back(faces[0]); 
-            std::vector<int> weight;
-            weight.push_back(1);
-            testAllRect(ResultFaces, faces, weight);
-            // cout << "after test all rect" << endl;
-        }
+        // std::vector<Rect> ResultFaces = {};
+        // if (!faces.empty())
+        // {
+        //     ResultFaces.push_back(faces[0]); 
+        //     std::vector<int> weight;
+        //     weight.push_back(1);
+        //     testAllRect(ResultFaces, faces, weight);
+        //     // cout << "after test all rect" << endl;
+        // }
         //Cut rectangles
-        CutRect(image[num] ,ResultFaces, &frame); 
+        CutRect(image[num] ,faces, &frame); 
     }
 	return 0;
 }
@@ -92,7 +92,7 @@ void CutRect(std::string image_path, std::vector<Rect>& ResultFaces, Mat* ptr) {
             cv::Mat croppedFaceImage;
             croppedFaceImage = (*ptr)(ResultFaces[i]).clone();
             std::string path;
-            if (overlap_bool(ResultFaces[i], images_info[image_name], 30))
+            if (overlap_bool(ResultFaces[i], images_info[image_name], 50))
                 path = "positive/";
             else
                 path = "negative/";
@@ -125,11 +125,11 @@ void CutRect(std::string image_path, std::vector<Rect>& ResultFaces, Mat* ptr) {
     
 // }
 
-void testAllRect(std::vector<Rect>&  ResultFaces, std::vector<Rect>& faces, std::vector<int>& weight) {
-    for(size_t i = 1; i < faces.size(); i++) {
-        testNextRect(ResultFaces, faces[i], weight);
-    }
-}
+// void testAllRect(std::vector<Rect>&  ResultFaces, std::vector<Rect>& faces, std::vector<int>& weight) {
+//     for(size_t i = 1; i < faces.size(); i++) {
+//         testNextRect(ResultFaces, faces[i], weight);
+//     }
+// }
 
 ///////////////////////////////////////////////
 //  a-----------------b
@@ -137,34 +137,34 @@ void testAllRect(std::vector<Rect>&  ResultFaces, std::vector<Rect>& faces, std:
 //  d-----------------c
 ///////////////////////////////////////////////
 //test overlap; if overlap, adjust overlapped rect
-bool testOverlap(Rect& r1, Rect& r2, int w) {
+// bool testOverlap(Rect& r1, Rect& r2, int w) {
 
-    int ax = std::max(r1.x, r2.x);
-    int ay = std::max(r1.y, r2.y);
-    int cx = std::min(r1.x + r1.width, r2.x + r2.width);
-    int cy = std::min(r1.y + r1.height, r2.y + r2.height);
-    int minArea = std::min(r1.width * r1.height, r2.width * r2.height);
+//     int ax = std::max(r1.x, r2.x);
+//     int ay = std::max(r1.y, r2.y);
+//     int cx = std::min(r1.x + r1.width, r2.x + r2.width);
+//     int cy = std::min(r1.y + r1.height, r2.y + r2.height);
+//     int minArea = std::min(r1.width * r1.height, r2.width * r2.height);
 
-    if((ax <= cx) && (ay <= cy) && (((cy-ay)*(cx-ax)) >= (0.8*minArea))){
-        r1.width = (r1.width * w + r2.width)/(w + 1);
-        r1.height = (r1.height * w + r2.height)/(w + 1);
-        r1.x = (r1.x * w + r2.x)/(w + 1);
-        r1.y = (r1.y * w + r2.y)/(w + 1);
-        return true;
-    }else {
-        return false;
-    }
+//     if((ax <= cx) && (ay <= cy) && (((cy-ay)*(cx-ax)) >= (0.8*minArea))){
+//         r1.width = (r1.width * w + r2.width)/(w + 1);
+//         r1.height = (r1.height * w + r2.height)/(w + 1);
+//         r1.x = (r1.x * w + r2.x)/(w + 1);
+//         r1.y = (r1.y * w + r2.y)/(w + 1);
+//         return true;
+//     }else {
+//         return false;
+//     }
 
-}
+// }
 
-//if not overlap, add to ResultFaces; 
-void testNextRect(std::vector<Rect>& ResultFaces, Rect& r1, std::vector<int>& weight) {
-    for(size_t i = 0; i < ResultFaces.size(); i++) {
-        if(testOverlap(ResultFaces[i], r1, weight[i])) {
-            weight[i]++;
-            return;
-        }
-    }
-    ResultFaces.push_back(r1);
-    weight.push_back(1);
-}
+//if not overlap, add to ResultFaces;
+// void testNextRect(std::vector<Rect>& ResultFaces, Rect& r1, std::vector<int>& weight) {
+//     for(size_t i = 0; i < ResultFaces.size(); i++) {
+//         if(testOverlap(ResultFaces[i], r1, weight[i])) {
+//             weight[i]++;
+//             return;
+//         }
+//     }
+//     ResultFaces.push_back(r1);
+//     weight.push_back(1);
+// }

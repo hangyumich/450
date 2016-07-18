@@ -116,7 +116,7 @@ void evaluate_recall_rate(std::vector<Rect> faces,std::vector<Rect> faces_ans, M
 void evaluate_pos_neg_rate(std::vector<Rect> faces,std::vector<Rect> faces_ans, Mat *frame){
 		int score = 0;
 		for( size_t i = 0; i < faces_ans.size(); i++ ){//per face in answer
-			if (overlap_bool(faces_ans[i], faces, 30)) {
+			if (overlap_bool(faces_ans[i], faces, 50)) {
 				rectangle(*frame, faces_ans[i], 255,1,0);
 				score++;
 			} else rectangle(*frame, faces_ans[i], 0,1,0);

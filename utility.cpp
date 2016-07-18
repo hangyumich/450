@@ -65,7 +65,7 @@ bool overlap_bool(Rect rectA, vector<Rect> answer, int threshold ){
         y1 = max(rectA.y,answer[j].y);
         y2 = min(rectA.y+rectA.height,answer[j].y+answer[j].height);
         if ((x2>x1) && (y2>y1)) { 
-            overlap = 100*(x2-x1)*(y2-y1)/(rectA.width*rectA.height);
+            overlap = 100*(x2-x1)*(y2-y1)/(answer[j].width * answer[j].height);
             if (overlap > threshold) return 1;
             ////used for verification
             //cout << "x1=" << x1 <<  " y1=" << y1 << " x2=" << x2 << " y2=" << y2 <<"\n";
