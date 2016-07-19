@@ -16,9 +16,9 @@ extern std::string test_info;
 string face_cascade_name = "/home/ubuntu/face_cascade_example/profile_face_model/cascade.xml";
 CascadeClassifier face_cascade;
 
-// bool testOverlap(Rect&, Rect&, int);
-// void testNextRect(std::vector<Rect>&, Rect&, std::vector<int>&);
-// void testAllRect(std::vector<Rect>&, std::vector<Rect>&, std::vector<int>&);
+bool testOverlap(Rect&, Rect&, int);
+void testNextRect(std::vector<Rect>&, Rect&, std::vector<int>&);
+void testAllRect(std::vector<Rect>&, std::vector<Rect>&, std::vector<int>&);
 void CutRect(std::string image_name, std::vector<Rect>&, Mat*);
 
 unordered_map<string, vector<Rect>> images_info;
@@ -157,7 +157,7 @@ bool testOverlap(Rect& r1, Rect& r2, int w) {
 
 }
 
-if not overlap, add to ResultFaces;
+// if not overlap, add to ResultFaces;
 void testNextRect(std::vector<Rect>& ResultFaces, Rect& r1, std::vector<int>& weight) {
     for(size_t i = 0; i < ResultFaces.size(); i++) {
         if(testOverlap(ResultFaces[i], r1, weight[i])) {

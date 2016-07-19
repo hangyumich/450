@@ -18,7 +18,7 @@ std::vector<int> pos_answer_num;
 std::vector<int> pos_detected_num;
 std::vector<int> total_answer_num;
 std::vector<int> total_detected_num;
-
+unordered_map<string, vector<Rect>> images_info;
 
 int main( int argc, char** argv )
 {	
@@ -42,7 +42,9 @@ int main( int argc, char** argv )
 
 	//Load Trained Model   
 	if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return -1; };
-       
+    
+	ReadImagesInfo(test_data_folder + test_info, images_info);
+
 	for (int num = 0; num < image.size(); num++){//per image in the folder	
 		//Load Image
 		Mat frame;
@@ -58,21 +60,22 @@ int main( int argc, char** argv )
 			//std::vector<double> fakeWeights;
 			//bool b;
 			//face_cascade.detectMultiScaleNoGrouping( frame_gray, faces, fakeLevels, fakeWeights, 1.1, 0, Size(200, 200),b );
-			face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0, Size(200, 200) );		
+			face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0, Size(200, 200) );
 			total_detected_num.push_back(faces.size());
 			
 			//Get answers from txt file
-			std::vector<Rect> faces_ans;
-			faces_ans = ReadRectInfo( test_data_folder, test_info, image[num]);
-			total_answer_num.push_back(faces_ans.size());
-					
+       	 	string image_name = image_path.substr(image_path.find_last_of("/")+1);
+        	image_name = image_name.substr(0, image_name.find_last_of("."));
+			
+			total_answer_num.push_back(images_info[image_name].size());
+
 			//Overlap Analysis
-			evaluate_recall_rate(faces, faces_ans, &frame);
-			evaluate_pos_neg_rate(faces_ans, faces, &frame);
+			evaluate_recall_rate(faces, images_info[image_name], &frame);
+			evaluate_pos_neg_rate(images_info[image_name], faces, &frame);
 			
 			//Display the window
 			// namedWindow(image[num], WINDOW_AUTOSIZE );
-			imwrite(image[num], frame );  
+			//imwrite(image[num], frame );  
 		}
 	}
 	
