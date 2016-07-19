@@ -64,7 +64,7 @@ int main( int argc, char** argv )
 			total_detected_num.push_back(faces.size());
 			
 			//Get answers from txt file
-       	 	string image_name = image_path.substr(image_path.find_last_of("/")+1);
+       	 	string image_name = image[num].substr(image[num].find_last_of("/")+1);
         	image_name = image_name.substr(0, image_name.find_last_of("."));
 			
 			total_answer_num.push_back(images_info[image_name].size());
