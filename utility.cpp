@@ -99,12 +99,10 @@ bool overlap_bool(Rect rectA, vector<Rect> answer, int threshold, bool percentag
 //         }
 // }
    
-std::vector<std::string> getImageNames (){
+std::vector<std::string> getImageNames (string filename){
     std::vector<std::string> Ans;
 
     ifstream filestream;
-    string filename;
-    filename = test_data_folder + test_info;
     filestream.open(filename.c_str());
     if ( !filestream.is_open()){
         cout << "open failed" << endl;
