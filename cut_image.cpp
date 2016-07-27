@@ -50,7 +50,7 @@ int main( int argc, char** argv )
     ReadImagesInfo("/home/ubuntu/adaboost_sample/pos_info.txt", images_info);
     if( !left_face_cascade.load( left_cascade_name ) ){ printf("--(!)Error loading left face cascade\n"); return -1; };
     if( !front_face_cascade.load( front_cascade_name ) ){ printf("--(!)Error loading front face cascade\n"); return -1; };
-    if( !right_face_cascade.load( right_face_cascade ) ){ printf("--(!)Error loading right face cascade\n"); return -1; };
+    if( !right_face_cascade.load( right_cascade_name ) ){ printf("--(!)Error loading right face cascade\n"); return -1; };
 
     // cout <<  "image size:" << image.size() << endl;
 	for (int num = 0; num < image.size(); num++){//per image in the folder  
