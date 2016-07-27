@@ -64,7 +64,7 @@ int main( int argc, char** argv )
 			//Detect faces
 			std::vector<Rect> faces;    
 			t1 = clock();
-			face_cascade.detectMultiScale( frame_gray, faces, 1.2, 2, 0, frame.size()/5 , frame.size() );
+			face_cascade.detectMultiScale( frame_gray, faces, 1.2, 2, 0, Size(frame.size().rows/5, frame.size().cols/5) , frame.size() );
 			total_detected_num.push_back(faces.size());
 			t2 = clock();
 			time_elapsed.push_back(((long double)t2-(long double)t1)/CLOCKS_PER_SEC);
