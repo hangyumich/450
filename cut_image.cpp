@@ -103,20 +103,24 @@ void CutRect(std::string image_path, std::vector<Rect>& ResultFaces, Mat* ptr) {
         Point top_left( ResultFaces[i].x, ResultFaces[i].y);
         Point bottom_right( ResultFaces[i].x + ResultFaces[i].width, ResultFaces[i].y + ResultFaces[i].height );
         //make sure rect inside original image 
-        if((ResultFaces[i].x > 0) && (ResultFaces[i].y > 0) && 
+        if((ResultFaces[i].x >= 0) && (ResultFaces[i].y >= 0) && 
             ((ResultFaces[i].width + ResultFaces[i].x) < (*ptr).size().width) &&
             ((ResultFaces[i].height + ResultFaces[i].y) < (*ptr).size().height)) {
             //cut image
             cv::Mat croppedFaceImage;
             croppedFaceImage = (*ptr)(ResultFaces[i]).clone();
             std::string path;
-            if (overlap_bool(ResultFaces[i], images_info[image_name], 50, 0))
+            if (overlap_bool(ResultFaces[i], images_info[image_name], 50, 0)) {
                 path = "positive/";
-            else
+                std::string name = image_name + "_" + to_string(i) + ".jpg";
+                // cout << "writing to " << path << name << endl;
+                imwrite(path+name, croppedFaceImage);
+            } else if (!overlap_bool(ResultFaces[i], images_info[image_name], 30, 0)) {
                 path = "negative/";
-            std::string name = image_name + "_" + to_string(i) + ".jpg";
-            // cout << "writing to " << path << name << endl;
-            imwrite(path+name, croppedFaceImage);
+                std::string name = image_name + "_" + to_string(i) + ".jpg";
+                // cout << "writing to " << path << name << endl;
+                imwrite(path+name, croppedFaceImage);
+            }
         }
     }
 }
