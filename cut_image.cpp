@@ -92,7 +92,7 @@ void CutRect(std::string image_path, std::vector<Rect>& ResultFaces, Mat* ptr) {
             cv::Mat croppedFaceImage;
             croppedFaceImage = (*ptr)(ResultFaces[i]).clone();
             std::string path;
-            if (overlap_bool(ResultFaces[i], images_info[image_name], 50))
+            if (overlap_bool(ResultFaces[i], images_info[image_name], 50, 0))
                 path = "positive/";
             else
                 path = "negative/";
