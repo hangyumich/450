@@ -13,8 +13,14 @@ using namespace cv;
 extern std::string test_data_folder;
 extern std::string test_info;
 
-string face_cascade_name = "/home/ubuntu/face_cascade_example/profile_face_model/cascade.xml";
-CascadeClassifier face_cascade;
+string left_cascade_name = "/home/ubuntu/adaboost_train/left_profile_face_model/cascade.xml";
+string front_cascade_name = "/home/ubuntu/adaboost_train/front_profile_face_model/cascade.xml";
+string right_cascade_name = "/home/ubuntu/adaboost_train/right_profile_face_model/cascade.xml";
+
+CascadeClassifier left_face_cascade;
+CascadeClassifier front_face_cascade;
+CascadeClassifier right_face_cascade;
+
 
 bool testOverlap(Rect&, Rect&, int);
 void testNextRect(std::vector<Rect>&, Rect&, std::vector<int>&);
@@ -29,7 +35,7 @@ int main( int argc, char** argv )
 
     if (argc == 1){
         //Scan the folder
-        image=getImageNames();
+        image=getImageNames("/home/ubuntu/adaboost_sample/pos_info.txt");
     }
     else if (argc == 2){
         //Detect one file
@@ -41,15 +47,19 @@ int main( int argc, char** argv )
        return -1;
     }
 	
-    ReadImagesInfo(test_data_folder + test_info, images_info);
-    if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return -1; };
+    ReadImagesInfo("/home/ubuntu/adaboost_sample/pos_info.txt", images_info);
+    if( !left_face_cascade.load( left_cascade_name ) ){ printf("--(!)Error loading left face cascade\n"); return -1; };
+    if( !front_face_cascade.load( front_cascade_name ) ){ printf("--(!)Error loading front face cascade\n"); return -1; };
+    if( !right_face_cascade.load( right_face_cascade ) ){ printf("--(!)Error loading right face cascade\n"); return -1; };
 
     // cout <<  "image size:" << image.size() << endl;
 	for (int num = 0; num < image.size(); num++){//per image in the folder  
         cout << "processing image "<< image[num] << endl;
         Mat frame;
         Mat frame_gray;
-        std::vector<Rect> faces;
+        std::vector<Rect> left_faces;
+        vector<Rect> front_faces;
+        vector<Rect> right_faces;
             
         //Load Trained Model   
         //Load Image
@@ -58,8 +68,16 @@ int main( int argc, char** argv )
         cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
         equalizeHist( frame_gray, frame_gray );
         //Detect faces
-        face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0, Size(200, 200) );     
+        left_face_cascade.detectMultiScale( frame_gray, left_faces, 1.1, 2, 0, Size(frame.size().height/5, frame.size().width/5) , frame.size() );     
+        front_face_cascade.detectMultiScale( frame_gray, front_faces, 1.1, 2, 0, Size(frame.size().height/5, frame.size().width/5) , frame.size() );     
+        right_face_cascade.detectMultiScale( frame_gray, right_faces, 1.1, 2, 0, Size(frame.size().height/5, frame.size().width/5) , frame.size() );     
         // cout << "after detect face." << endl;
+
+        vector<Rect> faces;
+        faces.insert(faces.end(), left_faces.begin(), left_faces.end());
+        faces.insert(faces.end(), front_faces.begin(), front_faces.end());
+        faces.insert(faces.end(), right_faces.begin(), right_faces.end());
+        
         //combine rectangles------added code
         std::vector<Rect> ResultFaces = {};
         if (!faces.empty())
@@ -95,7 +113,7 @@ void CutRect(std::string image_path, std::vector<Rect>& ResultFaces, Mat* ptr) {
             if (overlap_bool(ResultFaces[i], images_info[image_name], 50, 0))
                 path = "positive/";
             else
-                path = "negative/";
+                path = "negative/";c
             std::string name = image_name + "_" + to_string(i) + ".jpg";
             // cout << "writing to " << path << name << endl;
             imwrite(path+name, croppedFaceImage);
@@ -146,10 +164,10 @@ bool testOverlap(Rect& r1, Rect& r2, int w) {
     int minArea = std::min(r1.width * r1.height, r2.width * r2.height);
 
     if((ax <= cx) && (ay <= cy) && (((cy-ay)*(cx-ax)) >= (0.95*minArea))){
-        r1.width = (r1.width * w + r2.width)/(w + 1);
-        r1.height = (r1.height * w + r2.height)/(w + 1);
-        r1.x = (r1.x * w + r2.x)/(w + 1);
-        r1.y = (r1.y * w + r2.y)/(w + 1);
+        // r1.width = (r1.width * w + r2.width)/(w + 1);
+        // r1.height = (r1.height * w + r2.height)/(w + 1);
+        // r1.x = (r1.x * w + r2.x)/(w + 1);
+        // r1.y = (r1.y * w + r2.y)/(w + 1);
         return true;
     }else {
         return false;
@@ -161,7 +179,7 @@ bool testOverlap(Rect& r1, Rect& r2, int w) {
 void testNextRect(std::vector<Rect>& ResultFaces, Rect& r1, std::vector<int>& weight) {
     for(size_t i = 0; i < ResultFaces.size(); i++) {
         if(testOverlap(ResultFaces[i], r1, weight[i])) {
-            weight[i]++;
+            //weight[i]++;
             return;
         }
     }
